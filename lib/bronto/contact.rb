@@ -80,11 +80,11 @@ module Bronto
     end
 
     def save
-      if id.present?
-        self.class.update(self)
-      else
-        self.class.save(self)
-      end
+      self.class.save(self)
+    end
+
+    def update
+      self.class.update(self)
     end
 
     def to_hash
