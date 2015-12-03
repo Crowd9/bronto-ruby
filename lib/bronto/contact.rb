@@ -91,7 +91,7 @@ module Bronto
       if id.present?
         { id: id, email: email, status: status, fields: fields.values.map(&:to_hash) }
       else
-        { email: email, status: status, fields: fields.values.map(&:to_hash) }
+        { email: email, fields: fields.values.map(&:to_hash) }
       end
     end
 
