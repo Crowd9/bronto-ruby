@@ -37,6 +37,25 @@ module Bronto
       objs
     end
 
+    def self.update(*objs)
+      objs = objs.flatten
+      api_key = objs.first.is_a?(String) ? objs.shift : self.api_key
+
+      resp = request(:update, {plural_class_name => objs.map(&:to_hash)})
+
+      objs.each { |o| o.errors.clear }
+
+      Array.wrap(resp[:return][:results]).each_with_index do |result, i|
+        if result[:is_error]
+          objs[i].errors.add(result[:error_code], result[:error_string])
+        else
+          objs[i].id = result[:id]
+        end
+      end
+
+      objs
+    end
+
     def initialize(options = {})
       self.fields = {}
       fields = options.delete(:fields)
@@ -61,14 +80,18 @@ module Bronto
     end
 
     def save
-      self.class.save(self)
+      if id.present?
+        self.class.update(self)
+      else
+        self.class.save(self)
+      end
     end
 
     def to_hash
       if id.present?
-        { id: id, email: email, fields: fields.values.map(&:to_hash) }
+        { id: id, email: email, status: status, fields: fields.values.map(&:to_hash) }
       else
-        { email: email, fields: fields.values.map(&:to_hash) }
+        { email: email, status: status, fields: fields.values.map(&:to_hash) }
       end
     end
 
