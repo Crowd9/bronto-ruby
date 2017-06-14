@@ -11,6 +11,9 @@ module Bronto
 
     @@api_key = nil
 
+    @@read_timeout = 60
+    @@open_timeout = 60
+
     # Getter/Setter for global API Key.
     def self.api_key=(api_key)
       @@api_key = api_key
@@ -18,6 +21,24 @@ module Bronto
 
     def self.api_key
       @@api_key
+    end
+
+    # Getter/Setter for global HTTP open timeout.
+    def self.open_timeout=(open_timeout)
+      @@open_timeout = open_timeout
+    end
+
+    def self.open_timeout
+      @@open_timeout
+    end
+
+    # Getter/Setter for global HTTP read timeout.
+    def self.read_timeout=(read_timeout)
+      @@read_timeout = read_timeout
+    end
+
+    def self.read_timeout
+      @@read_timeout
     end
 
     def self.connection_cache
@@ -59,7 +80,8 @@ module Bronto
           soap_header: {
             "tns:sessionHeader" => { session_id: resp.body[:login_response][:return] }
           },
-          read_timeout: 600 # Give Bronto up to 10 minutes to reply
+          open_timeout: open_timeout,
+          read_timeout: read_timeout
         ),
         last_used: nil
       }
